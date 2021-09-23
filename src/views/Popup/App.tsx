@@ -1,25 +1,46 @@
 import React from 'react'
 import './App.css'
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <p>Popup page</p>
-        <p>
-          Edit <code>src/views/Popup/App.tsx</code> and save.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+interface MyState {
+  record: boolean
+}
+
+export class App extends React.Component<any, MyState> {
+
+  constructor(props: any) {
+    super(props);
+    this.state = {
+      record: false
+    }
+  } 
+
+  startRecording = () => {
+    this.setState({ record: true });
+  }
+ 
+  stopRecording = () => {
+    this.setState({ record: false });
+  }
+ 
+  onData(recordedBlob: any) {
+    console.log('chunk of real-time data is: ', recordedBlob);
+  }
+ 
+  onStop(recordedBlob: any) {
+    console.log('recordedBlob is: ', recordedBlob);
+  }
+  
+  render() {
+    return (
+      <div className="App">
+        <header className="App-header">
+          <p>Popup page</p>
+          <button onClick={this.startRecording} disabled={this.state.record} type="button">Start</button>
+          <button onClick={this.stopRecording} disabled={!this.state.record} type="button">Stop</button>
+        </header>
+      </div>
+    );
+  }
 }
 
 export default App

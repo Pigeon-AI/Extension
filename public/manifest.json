@@ -1,28 +1,27 @@
 {
-  "manifest_version": 2,
-  "name": "Extension Name",
+  "manifest_version": 3,
+  "name": "Pigeon AI",
   "version": "0.1",
-  "description": "Some Description",
+  "description": "Pigeon AI chromium extension",
   "permissions": [
+    "tabs",
+    "desktopCapture"
   ],
-  "background": {
-    "scripts": ["static/js/background.js"]
-  },
-  "content_scripts": [{
-    "js": [ "static/js/content.js" ],
-    "matches": [
-      "http://*.example.com/*", "https://*.example.com/*"
-    ]
-  }],
-  "icons": {
-    "192": "logo192.png"
-  },
-  "browser_action": {
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "React Chrome Extension",
     "default_icon": {
-      "192": "logo192.png"
-    },
-    "default_title": "Popup",
-    "default_popup": "popup.html"
+      "16": "/images/get_started16.png",
+      "32": "/images/get_started32.png",
+      "48": "/images/get_started48.png",
+      "128": "/images/get_started128.png"
+    }
+  },
+  "icons": {
+    "16": "/images/get_started16.png",
+    "32": "/images/get_started32.png",
+    "48": "/images/get_started48.png",
+    "128": "/images/get_started128.png"
   },
   "options_ui": {
     "page": "options.html"
