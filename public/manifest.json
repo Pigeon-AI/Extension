@@ -3,9 +3,14 @@
   "name": "Pigeon AI",
   "version": "0.1",
   "description": "Pigeon AI chromium extension",
+  "background": {
+    "service_worker": "static/js/background.js"
+  },
   "permissions": [
-    "tabs",
-    "desktopCapture"
+    "unlimitedStorage"
+  ],
+  "host_permissions": [
+    "<all_urls>"
   ],
   "action": {
     "default_popup": "popup.html",
