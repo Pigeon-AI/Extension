@@ -16,6 +16,7 @@ function override(config, env) {
   config.entry = {
     popup: paths.appIndexJs,
     options: paths.appSrc + '/options',
+    selector: paths.appSrc + '/selector',
     background: paths.appSrc + '/background',
     content: paths.appSrc + '/content'
   };

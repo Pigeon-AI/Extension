@@ -7,10 +7,14 @@
     "service_worker": "static/js/background.js"
   },
   "permissions": [
-    "unlimitedStorage"
+    "unlimitedStorage",
+    "activeTab",
+    "tabs",
+    "scripting"
   ],
   "host_permissions": [
-    "<all_urls>"
+    "<all_urls>",
+    "*://*/*"
   ],
   "action": {
     "default_popup": "popup.html",

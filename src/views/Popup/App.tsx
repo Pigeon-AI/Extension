@@ -54,8 +54,31 @@ export class App extends React.Component<any, MyState> {
     console.log('recordedBlob is: ', recordedBlob);
   }
 
+  async startSelector() {
+    const queryOptions = { active: true, currentWindow: true };
+    const [tab] = await chrome.tabs.query(queryOptions);
+
+    chrome.runtime.onMessage.addListener((message: string, sender, sendResponse: ({}) => void) => {
+      const message_obj: {title: string, data: any} = eval(message);
+
+      console.log(message_obj.title);
+      console.log(message_obj.data);
+
+      sendResponse({
+        data: "Success!"
+      });
+    });
+
+    const result = await chrome.scripting.executeScript({
+      target: { tabId: tab.id! },
+      files: ['/static/js/selector.js'],
+    });
+
+    console.log(result);
+  }
+
   render() {
-    const ImageSuch = (props: {imageSrc: string | null}) => {
+    const ImageSuch = (props: { imageSrc: string | null }) => {
       if (props.imageSrc) {
         return <Image src={props.imageSrc} fluid></Image>
       } else {
@@ -76,6 +99,9 @@ export class App extends React.Component<any, MyState> {
           </Col>
           <Col>
             <button onClick={this.stopRecording} disabled={!this.state.record} type="button">Stop</button>
+          </Col>
+          <Col>
+            <button onClick={this.startSelector} type="button">Select Element</button>
           </Col>
         </Row>
         <Row>
