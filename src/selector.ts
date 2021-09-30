@@ -1,6 +1,25 @@
 console.log('Selector injected into website.');
 export {}
 
+const addHighlight = (elem: HTMLElement) => {
+    // color the background
+    elem.style.backgroundColor = "#f0a3ff";
+
+    // make sure the text is still readable
+    elem.style.color = "#000000";
+
+    // background color won't work on an image so add a "tint" on top of it
+    if (elem.localName == "img") {
+        elem.style.filter = "sepia(100%) saturate(300%) brightness(70%) hue-rotate(180deg)";
+    }
+}
+
+const removeHighlight = (elem: HTMLElement) => {
+    elem.style.backgroundColor = "";
+    elem.style.color = "";
+    elem.style.filter = "";
+}
+
 const handleClicks = (e: MouseEvent) => {
     if (e.stopPropagation) {
         e.stopPropagation();
@@ -35,9 +54,7 @@ const handleClicks = (e: MouseEvent) => {
     window.removeEventListener('mouseover', handleHover, false);
     window.removeEventListener('mouseout', hoverEnd, false);
 
-    // remove the active highlighted color
-    target.style.backgroundColor = "";
-    target.style.color = "";
+    removeHighlight(target);
 }
 
 const handleHover = (e: MouseEvent) => {
@@ -50,8 +67,7 @@ const handleHover = (e: MouseEvent) => {
 
     const target = e.target as HTMLElement;
     
-    target.style.backgroundColor = "#f0a3ff";
-    target.style.color = "#000000";
+    addHighlight(target);
 }
 
 const hoverEnd = (e: MouseEvent) => {
@@ -64,8 +80,7 @@ const hoverEnd = (e: MouseEvent) => {
 
     const target = e.target as HTMLElement;
     
-    target.style.backgroundColor = "";
-    target.style.color = "";
+    removeHighlight(target);
 }
 
 // Add the listener:
