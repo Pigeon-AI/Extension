@@ -39,10 +39,8 @@ const handleClicks = (e: MouseEvent) => {
     console.log(center);
 
     chrome.runtime.sendMessage({
-        data: JSON.stringify({
-            title: "screenshot",
-            data: center
-        })
+        title: "screenshot",
+        data: center
     }, (response) => {
         console.log("Response: " + response);
     });

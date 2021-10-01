@@ -58,23 +58,45 @@ export class App extends React.Component<any, MyState> {
     const queryOptions = { active: true, currentWindow: true };
     const [tab] = await chrome.tabs.query(queryOptions);
 
-    chrome.runtime.onMessage.addListener((message: string, sender, sendResponse: ({}) => void) => {
-      const message_obj: {title: string, data: any} = eval(message);
+    console.log("Starting selector shenanigans")
 
-      console.log(message_obj.title);
-      console.log(message_obj.data);
+    // handle messages received
+    chrome.runtime.onMessage.addListener(
+      (message: { title: string, data: any }, sender, sendResponse: (arg0: any) => void) => {
+      new Promise(async (send) => {
 
-      sendResponse({
-        data: "Success!"
-      });
+        console.log("popup.js received message.")
+
+        const takeImage = chrome.tabs.captureVisibleTab();
+
+        console.log("Title: " + message.title);
+        console.log("Data: " + message.data);
+
+
+
+        // take screenshot
+        const imageUri = await takeImage;
+
+        console.log(imageUri);
+
+        send({
+          data: "Success!"
+        });
+
+
+      })
+      .then(sendResponse)
+      .catch(err => {
+        console.error(err);
+      })
+
+      return true;
     });
 
-    const result = await chrome.scripting.executeScript({
+    await chrome.scripting.executeScript({
       target: { tabId: tab.id! },
       files: ['/static/js/selector.js'],
     });
-
-    console.log(result);
   }
 
   render() {
