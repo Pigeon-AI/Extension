@@ -72,8 +72,6 @@ export class App extends React.Component<any, MyState> {
         console.log("Title: " + message.title);
         console.log("Data: " + message.data);
 
-
-
         // take screenshot
         const imageUri = await takeImage;
 
@@ -82,8 +80,6 @@ export class App extends React.Component<any, MyState> {
         send({
           data: "Success!"
         });
-
-
       })
       .then(sendResponse)
       .catch(err => {
