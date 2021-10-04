@@ -28,7 +28,7 @@ export const handleMessage = async (
 const handleScreenshot = async (x: number, y: number) => {
     const imageUri: string = await chrome.tabs.captureVisibleTab();
 
-    console.log(imageUri);
+    console.log("Took a screenshot");
 
     const requestData = {
         x: x,
