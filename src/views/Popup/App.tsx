@@ -18,6 +18,53 @@ export class App extends React.Component<any, MyState> {
     this.state = {
       imageSrc: null
     }
+
+  }
+
+
+  componentDidMount() {
+    // Add message listener when component mounts
+    chrome.runtime.onMessage.addListener(this.handleMessage);
+  }
+
+  componentWillUnmount() {
+   // Remove message listener when this component unmounts
+   chrome.runtime.onMessage.removeListener(this.handleMessage);
+  }
+
+  handleScreenshot = async (x: number, y: number) => {
+    const imageUri: string = await chrome.tabs.captureVisibleTab();
+
+    console.log(imageUri);
+
+    this.setState({
+      imageSrc: imageUri
+    });
+  }
+
+  handleMessage = async (
+    // the actual message received
+    message: { title: string, data: any },
+
+    // the sender of the message
+    sender: chrome.runtime.MessageSender,
+
+    // function handle to send response back to sender
+    sendResponse: (arg0: any) => void) => {
+
+      console.log(this);
+
+    switch (message.title) {
+      case "screenshot":
+        console.log("popup.js received message \'screenshot\'")
+        await this.handleScreenshot(message.data.x, message.data.y)
+        sendResponse("Success!");
+        break;
+    
+      default:
+        console.log("popup.js received message \'" + message.title + "\', doing nothing")
+        break;
+    }
   }
 
   async startSelector() {
@@ -26,37 +73,7 @@ export class App extends React.Component<any, MyState> {
 
     console.log("Starting selector shenanigans")
 
-    // handle messages received
-    chrome.runtime.onMessage.addListener(
-      (message: { title: string, data: any }, sender, sendResponse: (arg0: any) => void) => {
-      new Promise(async (send) => {
-
-        console.log("popup.js received message.")
-
-        const takeImage = chrome.tabs.captureVisibleTab();
-
-        console.log("Title: " + message.title);
-        console.log("Data: " + message.data);
-
-        // take screenshot
-        const imageUri = await takeImage;
-
-        this.state = {
-          imageSrc: imageUri
-        }
-
-        send({
-          data: "Success!"
-        });
-      })
-      .then(sendResponse)
-      .catch(err => {
-        console.error(err);
-      })
-
-      return true;
-    });
-
+    // execute the script that will call back
     await chrome.scripting.executeScript({
       target: { tabId: tab.id! },
       files: ['/static/js/selector.js'],
