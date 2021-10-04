@@ -1,3 +1,5 @@
+// This is a content script that gets injected into the website by App.tsx
+
 console.log('Selector injected into website.');
 export {}
 
