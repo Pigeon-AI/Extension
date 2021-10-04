@@ -9,6 +9,7 @@ import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 
 interface MyState {
+  responseString: string
 }
 
 export class App extends React.Component<any, MyState> {
@@ -16,19 +17,25 @@ export class App extends React.Component<any, MyState> {
   constructor(props: any) {
     super(props);
     this.state = {
+      responseString: ""
     }
 
   }
 
+  // Little helper to allow accessing the state of this
+  // object from the message-handling.ts file
+  // alternatively we could just move those functions to this file
+  // and it would be a bit less confusing, but it would make this file kinda long
+  handleMessageHelper = handleMessage(this)
 
   componentDidMount() {
     // Add message listener when component mounts
-    chrome.runtime.onMessage.addListener(handleMessage);
+    chrome.runtime.onMessage.addListener(this.handleMessageHelper);
   }
 
   componentWillUnmount() {
    // Remove message listener when this component unmounts
-   chrome.runtime.onMessage.removeListener(handleMessage);
+   chrome.runtime.onMessage.removeListener(this.handleMessageHelper);
   }
 
   async startSelector() {
@@ -53,6 +60,8 @@ export class App extends React.Component<any, MyState> {
       }
     }
 
+    const state = this.state;
+
     return (
       <Container>
         <Row>
@@ -63,6 +72,11 @@ export class App extends React.Component<any, MyState> {
         <Row>
           <Col>
             <button onClick={this.startSelector} type="button">Select Element</button>
+          </Col>
+        </Row>
+        <Row>
+          <Col>
+            {state.responseString}
           </Col>
         </Row>
       </Container>

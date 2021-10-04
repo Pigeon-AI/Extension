@@ -1,31 +1,35 @@
 // functions to handle messages for popup.js
 
+import App from "../../views/Popup/App";
 import { imageControllerUri } from "../Common/constants";
 
-export const handleMessage = async (
-    // the actual message received
-    message: { title: string, data: any },
+// functor to generate a function when passed an App
+export const handleMessage = (app: App) => {
+    return async (
+        // the actual message received
+        message: { title: string, data: any },
 
-    // the sender of the message
-    sender: chrome.runtime.MessageSender,
+        // the sender of the message
+        sender: chrome.runtime.MessageSender,
 
-    // function handle to send response back to sender
-    sendResponse: (arg0: any) => void) => {
+        // function handle to send response back to sender
+        sendResponse: (arg0: any) => void) => {
 
-        switch (message.title) {
-            case "screenshot":
-                console.log("popup.js received message \'screenshot\'")
-                await handleScreenshot(message.data.x, message.data.y)
-                sendResponse("Success!");
-                break;
+            switch (message.title) {
+                case "screenshot":
+                    console.log("popup.js received message \'screenshot\'")
+                    await handleScreenshot(message.data.x, message.data.y, app)
+                    sendResponse("Success!");
+                    break;
 
-            default:
-                console.log("popup.js received message \'" + message.title + "\', doing nothing")
-                break;
+                default:
+                    console.log("popup.js received message \'" + message.title + "\', doing nothing")
+                    break;
+        }
     }
 }
 
-const handleScreenshot = async (x: number, y: number) => {
+const handleScreenshot = async (x: number, y: number, app: App) => {
     const imageUri: string = await chrome.tabs.captureVisibleTab();
 
     console.log("Took a screenshot");
@@ -48,4 +52,8 @@ const handleScreenshot = async (x: number, y: number) => {
     const bodyText = await response.text();
 
     console.log("Received successful response:\n" + bodyText)
+
+    app.setState({
+        responseString: bodyText
+    });
 }
