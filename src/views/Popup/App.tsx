@@ -3,7 +3,7 @@
 import React from 'react'
 import Image from 'react-bootstrap/Image'
 import './App.css'
-import { handleMessage } from './message-handling'
+import { handleMessage } from '../../other/Popup/message-handling'
 import Container from 'react-bootstrap/Container'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
