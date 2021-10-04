@@ -45,7 +45,7 @@ const handleScreenshot = async (x: number, y: number) => {
         body: JSON.stringify(requestData)
     });
 
-    const responseData = await response.json();
+    const bodyText = await response.text();
 
-    console.log("Received successful response:\n" + responseData)
+    console.log("Received successful response:\n" + bodyText)
 }
