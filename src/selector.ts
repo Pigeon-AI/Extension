@@ -33,19 +33,14 @@ const handleClicks = (e: MouseEvent) => {
     const target = e.target as HTMLElement;
     
     const rect = target.getBoundingClientRect();
-    const center = {
+    const data = {
         x: (rect.left + rect.right) / 2,
-        y: (rect.top + rect.bottom) / 2
+        y: (rect.top + rect.bottom) / 2,
+        windowWidth: window.innerWidth,
+        windowHeight: window.innerHeight
     }
 
-    console.log(center);
-
-    chrome.runtime.sendMessage({
-        title: "screenshot",
-        data: center
-    }, (response) => {
-        console.log("Response: " + response);
-    });
+    console.log(data);
 
     // Remove it:
     window.removeEventListener('click', handleClicks, false);
@@ -55,6 +50,14 @@ const handleClicks = (e: MouseEvent) => {
     window.removeEventListener('mouseout', hoverEnd, false);
 
     removeHighlight(target);
+
+    // send success message to take the screenshot
+    chrome.runtime.sendMessage({
+        title: "screenshot",
+        data: data
+    }, (response) => {
+        console.log("Response: " + response);
+    });
 }
 
 const handleHover = (e: MouseEvent) => {

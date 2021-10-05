@@ -18,7 +18,7 @@ export const handleMessage = (app: App) => {
             switch (message.title) {
                 case "screenshot":
                     console.log("popup.js received message \'screenshot\'")
-                    await handleScreenshot(message.data.x, message.data.y, app)
+                    await handleScreenshot(message.data, app)
                     sendResponse("Success!");
                     break;
 
@@ -29,16 +29,13 @@ export const handleMessage = (app: App) => {
     }
 }
 
-const handleScreenshot = async (x: number, y: number, app: App) => {
+const handleScreenshot = async (data: any, app: App) => {
     const imageUri: string = await chrome.tabs.captureVisibleTab();
 
     console.log("Took a screenshot");
 
-    const requestData = {
-        x: x,
-        y: y,
-        imageUri: imageUri
-    };
+    // add onto the data
+    data["imageUri"] = imageUri;
 
     // upload the image to the api
     const response: Response = await fetch(imageControllerUri, {
@@ -46,7 +43,7 @@ const handleScreenshot = async (x: number, y: number, app: App) => {
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify(requestData)
+        body: JSON.stringify(data)
     });
 
     const bodyText = await response.text();
