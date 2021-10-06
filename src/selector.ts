@@ -34,10 +34,12 @@ const handleClicks = (e: MouseEvent) => {
     
     const rect = target.getBoundingClientRect();
     const data = {
-        x: (rect.left + rect.right) / 2,
-        y: (rect.top + rect.bottom) / 2,
+        elementCenterX: (rect.left + rect.right) / 2,
+        elementCenterY: (rect.top + rect.bottom) / 2,
         windowWidth: window.innerWidth,
-        windowHeight: window.innerHeight
+        windowHeight: window.innerHeight,
+        elementWidth: rect.right - rect.left,
+        elementHeight: rect.right - rect.left
     }
 
     console.log(data);
