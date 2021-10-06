@@ -30,6 +30,12 @@ export const handleMessage = (app: App) => {
 }
 
 const handleScreenshot = async (data: any, app: App) => {
+
+    // essentially sleep(500)
+    // needed so that the highlights have cleared by the time the screenshot
+    // is taken
+    await new Promise(r => setTimeout(r, 500));
+
     const imageUri: string = await chrome.tabs.captureVisibleTab();
 
     console.log("Took a screenshot");
