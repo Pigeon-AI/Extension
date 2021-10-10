@@ -31,6 +31,14 @@ const handleClicks = (e: MouseEvent) => {
     }
 
     const target = e.target as HTMLElement;
+
+    let pageSource : null | string = null;
+
+    try {
+        pageSource = document.getElementsByTagName('html')[0].outerHTML;
+    } catch (error) {
+        console.error("Error grabbing page html, continuing...")
+    }
     
     const rect = target.getBoundingClientRect();
     const data = {
@@ -39,8 +47,10 @@ const handleClicks = (e: MouseEvent) => {
         windowWidth: window.innerWidth,
         windowHeight: window.innerHeight,
         elementWidth: rect.right - rect.left,
-        elementHeight: rect.right - rect.left
-    }
+        elementHeight: rect.right - rect.left,
+        outerHTML: target.outerHTML,
+        pageSource: pageSource,
+    };
 
     console.log(data);
 
