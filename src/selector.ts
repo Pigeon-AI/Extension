@@ -47,7 +47,7 @@ const handleClicks = (e: MouseEvent) => {
         windowWidth: window.innerWidth,
         windowHeight: window.innerHeight,
         elementWidth: rect.right - rect.left,
-        elementHeight: rect.right - rect.left,
+        elementHeight: rect.bottom - rect.top,
         outerHTML: target.outerHTML,
         pageSource: pageSource,
     };
