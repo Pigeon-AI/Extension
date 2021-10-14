@@ -1,4 +1,5 @@
 // Global constants
 export const apiUri: string = "https://pigeon-ai-api.herokuapp.com"
 
-export const imageControllerUri: string = apiUri + "/Image"
+export const uploadControllerUri: string = apiUri + "/Upload"
+export const inferenceControllerUri: string = apiUri + "/Inference"

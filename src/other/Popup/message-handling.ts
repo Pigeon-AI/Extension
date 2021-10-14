@@ -1,7 +1,7 @@
 // functions to handle messages for popup.js
 
 import App from "../../views/Popup/App";
-import { imageControllerUri } from "../Common/constants";
+import { uploadControllerUri } from "../Common/constants";
 
 // functor to generate a function when passed an App
 export const handleMessage = (app: App) => {
@@ -44,7 +44,7 @@ const handleScreenshot = async (data: any, app: App) => {
     data["imageUri"] = imageUri;
 
     // upload the image to the api
-    const response: Response = await fetch(imageControllerUri, {
+    const response: Response = await fetch(uploadControllerUri, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
