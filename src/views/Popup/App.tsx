@@ -3,7 +3,15 @@
 import React from 'react'
 import Image from 'react-bootstrap/Image'
 import './App.css'
+import logo from "./../../images/pidgey_text_50percent.png"
 import { handleMessage } from '../../other/Popup/message-handling'
+import {
+  Grid,
+  Button,
+  Box
+} from '@material-ui/core';
+import { 
+	withStyles } from '@material-ui/core/styles';
 import Container from 'react-bootstrap/Container'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
@@ -11,6 +19,12 @@ import Col from 'react-bootstrap/Col'
 interface MyState {
   responseString: string
 }
+
+// const useStyles = () => ({
+//     body: {
+//         backgroundColor: 'orange',
+//     },
+//   });
 
 export class App extends React.Component<any, MyState> {
 
@@ -21,7 +35,16 @@ export class App extends React.Component<any, MyState> {
     }
 
   }
-
+//   useStyles = makeStyles((theme) => ({
+//     header: {
+//         backgroundColor: '#0C4165',
+//         color: 'white',
+//         border: '1px solid #707070',
+//         font: 'Avenir Next LT Com',
+//         fontSize: '25px',
+//         padding: '30px',
+//     },
+//   }));
   // Little helper to allow accessing the state of this
   // object from the message-handling.ts file
   // alternatively we could just move those functions to this file
@@ -61,27 +84,43 @@ export class App extends React.Component<any, MyState> {
     }
 
     const state = this.state;
+	const classes = this.props;
 
     return (
-      <Container>
-        <Row>
-          <Col>
-            <p>Popup page</p>
-          </Col>
-        </Row>
-        <Row>
-          <Col>
-            <button onClick={this.startSelector} type="button">Select Element</button>
-          </Col>
-        </Row>
-        <Row>
-          <Col>
-            {state.responseString}
-          </Col>
-        </Row>
-      </Container>
+		
+      // <Container>
+      //   <Row>
+      //     <Col>
+      //       <p>Popup page 1</p>
+      //     </Col>
+      //   </Row>
+      //   <Row>
+      //     <Col>
+      //       <button onClick={this.startSelector} type="button">Select Element</button>
+      //     </Col>
+      //   </Row>
+      //   <Row>
+      //     <Col>
+      //       {state.responseString}
+      //     </Col>
+      //   </Row>
+      // </Container>
+      // <div style={{padding:20}}
+      <Grid container spacing={5}>
+          <Grid item xs={12}>
+              <img src={logo} alt="Pidgey Logo" className="center" height={150} />
+          </Grid>
+          <Grid item xs={12}>
+            <Box textAlign='center'>
+                <Button variant="contained" onClick={this.startSelector}>Select Element</Button>
+            </Box>
+        	</Grid>
+        	<Grid item xs={12}>
+          		{state.responseString}
+        	</Grid>
+    	</Grid>
     );
   }
 }
 
-export default App
+export default App;
