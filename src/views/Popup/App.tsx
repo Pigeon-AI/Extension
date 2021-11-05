@@ -16,8 +16,15 @@ import Container from 'react-bootstrap/Container'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 
-interface MyState {
-  responseString: string
+export enum SelectorState {
+  NoSelection,
+  Upload,
+  Infer
+}
+
+export interface MyState {
+  responseString: string,
+  selectorState: SelectorState
 }
 
 // const useStyles = () => ({
@@ -31,7 +38,8 @@ export class App extends React.Component<any, MyState> {
   constructor(props: any) {
     super(props);
     this.state = {
-      responseString: ""
+      responseString: "",
+      selectorState: SelectorState.NoSelection
     }
 
   }
@@ -61,17 +69,24 @@ export class App extends React.Component<any, MyState> {
    chrome.runtime.onMessage.removeListener(this.handleMessageHelper);
   }
 
-  async startSelector() {
-    const queryOptions = { active: true, currentWindow: true };
-    const [tab] = await chrome.tabs.query(queryOptions);
+  async startSelector(newState: SelectorState) {
+    // only send the script if in a non-selection state
+    if (this.state.selectorState == SelectorState.NoSelection) {
+      const queryOptions = { active: true, currentWindow: true };
+      const [tab] = await chrome.tabs.query(queryOptions);
 
-    console.log("Starting selector shenanigans")
+      console.log("Starting selector shenanigans")
 
-    // execute the script that will call back
-    await chrome.scripting.executeScript({
-      target: { tabId: tab.id! },
-      files: ['/static/js/selector.js'],
-    });
+      // execute the script that will call back
+      await chrome.scripting.executeScript({
+        target: { tabId: tab.id! },
+        files: ['/static/js/selector.js'],
+      });
+    }
+
+    this.setState({
+      selectorState: newState
+    })
   }
 
   render() {
@@ -112,7 +127,12 @@ export class App extends React.Component<any, MyState> {
           </Grid>
           <Grid item xs={12}>
             <Box textAlign='center'>
-                <Button variant="contained" onClick={this.startSelector}>Select Element</Button>
+                <Button variant="contained" disabled={this.state.selectorState == SelectorState.Upload} onClick={() => this.startSelector(SelectorState.Upload)}>Upload Element</Button>
+            </Box>
+        	</Grid>
+          <Grid item xs={12}>
+            <Box textAlign='center'>
+                <Button variant="contained" disabled={this.state.selectorState == SelectorState.Infer} onClick={() => this.startSelector(SelectorState.Infer)}>Infer Element</Button>
             </Box>
         	</Grid>
         	<Grid item xs={12}>

@@ -1,7 +1,7 @@
 // functions to handle messages for popup.js
 
-import App from "../../views/Popup/App";
-import { uploadControllerUri } from "../Common/constants";
+import { App, SelectorState } from "../../views/Popup/App";
+import { uploadControllerUri, inferenceControllerUri } from "../Common/constants";
 
 // functor to generate a function when passed an App
 export const handleMessage = (app: App) => {
@@ -17,7 +17,7 @@ export const handleMessage = (app: App) => {
 
             switch (message.title) {
                 case "screenshot":
-                    console.log("popup.js received message \'screenshot\'")
+                    console.log("popup.js received message \'upload\'")
                     await handleScreenshot(message.data, app)
                     sendResponse("Success!");
                     break;
@@ -43,8 +43,14 @@ const handleScreenshot = async (data: any, app: App) => {
     // add onto the data
     data["imageUri"] = imageUri;
 
+    if(app.state.selectorState == SelectorState.NoSelection) {
+        throw "Got selection in bad state"
+    }
+
+    const uri = app.state.selectorState == SelectorState.Upload ? uploadControllerUri : inferenceControllerUri;
+
     // upload the image to the api
-    const response: Response = await fetch(uploadControllerUri, {
+    const response: Response = await fetch(uri, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
