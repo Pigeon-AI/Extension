@@ -20,6 +20,9 @@ export const handleMessage = (app: App) => {
                     console.log("popup.js received message \'upload\'")
                     await handleScreenshot(message.data, app)
                     sendResponse("Success!");
+                    app.setState({
+                        selectorState: SelectorState.NoSelection,
+                    });
                     break;
 
                 default:
