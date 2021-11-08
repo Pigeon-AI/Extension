@@ -35,16 +35,7 @@ export class App extends React.Component<any, MyState> {
     }
 
   }
-//   useStyles = makeStyles((theme) => ({
-//     header: {
-//         backgroundColor: '#0C4165',
-//         color: 'white',
-//         border: '1px solid #707070',
-//         font: 'Avenir Next LT Com',
-//         fontSize: '25px',
-//         padding: '30px',
-//     },
-//   }));
+
   // Little helper to allow accessing the state of this
   // object from the message-handling.ts file
   // alternatively we could just move those functions to this file
@@ -83,29 +74,12 @@ export class App extends React.Component<any, MyState> {
       }
     }
 
-    const state = this.state;
+  const state = this.state;
 	const classes = this.props;
 
     return (
 		
-      // <Container>
-      //   <Row>
-      //     <Col>
-      //       <p>Popup page 1</p>
-      //     </Col>
-      //   </Row>
-      //   <Row>
-      //     <Col>
-      //       <button onClick={this.startSelector} type="button">Select Element</button>
-      //     </Col>
-      //   </Row>
-      //   <Row>
-      //     <Col>
-      //       {state.responseString}
-      //     </Col>
-      //   </Row>
-      // </Container>
-      // <div style={{padding:20}}
+
       <Grid container spacing={5}>
           <Grid item xs={12}>
               <img src={logo} alt="Pidgey Logo" className="center" height={150} />
@@ -118,6 +92,7 @@ export class App extends React.Component<any, MyState> {
         	<Grid item xs={12}>
           		{state.responseString}
         	</Grid>
+          {/* <ImageSuch></ImageSuch> */}
     	</Grid>
     );
   }
