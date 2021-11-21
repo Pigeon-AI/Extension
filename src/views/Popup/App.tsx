@@ -1,32 +1,29 @@
 /*global chrome*/
 
 import React from 'react'
-import Image from 'react-bootstrap/Image'
 import './App.css'
 import logo from "./../../images/pidgey_text_50percent.png"
 import { handleMessage } from '../../other/Popup/message-handling'
-import { summaryControllerUri } from '../../other/Common/constants'
 import {
   Grid,
   Button,
   Box
 } from '@material-ui/core';
-import { 
-	withStyles } from '@material-ui/core/styles';
-import Container from 'react-bootstrap/Container'
-import Row from 'react-bootstrap/Row'
-import Col from 'react-bootstrap/Col'
+import SpeechRecognition from 'react-speech-recognition'
+import { Dictaphone } from '../Other/Dictaphone'
 
 export enum SelectorState {
   NoSelection,
   Upload,
   Infer,
-  PageSource
+  PageSource,
+  Listening
 }
 
 export interface MyState {
   responseString: string,
-  selectorState: SelectorState
+  selectorState: SelectorState,
+  transcript: string | null
 }
 
 // const useStyles = () => ({
@@ -36,14 +33,13 @@ export interface MyState {
 //   });
 
 export class App extends React.Component<any, MyState> {
-
   constructor(props: any) {
     super(props);
     this.state = {
       responseString: "",
-      selectorState: SelectorState.NoSelection
+      selectorState: SelectorState.NoSelection,
+      transcript: null,
     }
-
   }
 
   // Little helper to allow accessing the state of this
@@ -95,16 +91,41 @@ export class App extends React.Component<any, MyState> {
     })
   }
 
+  async listenOnce() {
+    const speechRecognition = await SpeechRecognition.startListening({ 
+      continuous: false,
+      language: 'en-US'
+    });
+
+    this.setState({
+      selectorState: SelectorState.Listening
+    })
+  }
+
+  async doneListening() {
+    console.log("done listening")
+
+    this.setState({
+      selectorState: SelectorState.NoSelection
+    })
+
+    return;
+  }
+
   render() {
     const state = this.state;
 
     return (
-		
-
       <Grid container spacing={5}>
           <Grid item xs={12}>
               <img src={logo} alt="Pidgey Logo" className="center" height={150} />
           </Grid>
+          <Grid item xs={12}>
+            <Box textAlign='center'>
+              <Dictaphone wasListening={state.selectorState == SelectorState.Listening} onListenEnd={() => this.doneListening()} />
+              <Button variant="contained" disabled={this.state.selectorState != SelectorState.NoSelection} onClick={() => this.listenOnce()}>Use microphone</Button>
+            </Box>
+        	</Grid>
           <Grid item xs={12}>
             <Box textAlign='center'>
                 <Button variant="contained" disabled={this.state.selectorState != SelectorState.NoSelection} onClick={() => this.startSelector(SelectorState.Upload)}>Upload Element</Button>
