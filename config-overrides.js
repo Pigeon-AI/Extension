@@ -18,7 +18,7 @@ function override(config, env) {
     options: paths.appSrc + '/options',
     selector: paths.appSrc + '/selector',
     background: paths.appSrc + '/background',
-    content: paths.appSrc + '/content'
+    pageSource: paths.appSrc + '/pageSource'
   };
   // Change output filename template to get rid of hash there
   config.output.filename = 'static/js/[name].js';

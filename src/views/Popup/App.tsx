@@ -5,6 +5,7 @@ import Image from 'react-bootstrap/Image'
 import './App.css'
 import logo from "./../../images/pidgey_text_50percent.png"
 import { handleMessage } from '../../other/Popup/message-handling'
+import { summaryControllerUri } from '../../other/Common/constants'
 import {
   Grid,
   Button,
@@ -19,7 +20,8 @@ import Col from 'react-bootstrap/Col'
 export enum SelectorState {
   NoSelection,
   Upload,
-  Infer
+  Infer,
+  PageSource
 }
 
 export interface MyState {
@@ -62,7 +64,8 @@ export class App extends React.Component<any, MyState> {
 
   async startSelector(newState: SelectorState) {
     // only send the script if in a non-selection state
-    if (this.state.selectorState == SelectorState.NoSelection) {
+    if (newState == SelectorState.Infer ||
+        newState == SelectorState.Upload) {
       const queryOptions = { active: true, currentWindow: true };
       const [tab] = await chrome.tabs.query(queryOptions);
 
@@ -74,6 +77,18 @@ export class App extends React.Component<any, MyState> {
         files: ['/static/js/selector.js'],
       });
     }
+    else if (newState == SelectorState.PageSource) {
+      const queryOptions = { active: true, currentWindow: true };
+      const [tab] = await chrome.tabs.query(queryOptions);
+
+      console.log("Starting summarizer shenanigans")
+
+      // execute the script that will call back
+      await chrome.scripting.executeScript({
+        target: { tabId: tab.id! },
+        files: ['/static/js/pageSource.js'],
+      });
+    }
 
     this.setState({
       selectorState: newState
@@ -81,16 +96,7 @@ export class App extends React.Component<any, MyState> {
   }
 
   render() {
-    const ImageSuch = (props: { imageSrc: string | null }) => {
-      if (props.imageSrc) {
-        return <Image src={props.imageSrc} fluid></Image>
-      } else {
-        return (null)
-      }
-    }
-
-  const state = this.state;
-	const classes = this.props;
+    const state = this.state;
 
     return (
 		
@@ -101,12 +107,17 @@ export class App extends React.Component<any, MyState> {
           </Grid>
           <Grid item xs={12}>
             <Box textAlign='center'>
-                <Button variant="contained" disabled={this.state.selectorState == SelectorState.Upload} onClick={() => this.startSelector(SelectorState.Upload)}>Upload Element</Button>
+                <Button variant="contained" disabled={this.state.selectorState != SelectorState.NoSelection} onClick={() => this.startSelector(SelectorState.Upload)}>Upload Element</Button>
             </Box>
         	</Grid>
           <Grid item xs={12}>
             <Box textAlign='center'>
-                <Button variant="contained" disabled={this.state.selectorState == SelectorState.Infer} onClick={() => this.startSelector(SelectorState.Infer)}>Infer Element</Button>
+                <Button variant="contained" disabled={this.state.selectorState != SelectorState.NoSelection} onClick={() => this.startSelector(SelectorState.Infer)}>Infer Element</Button>
+            </Box>
+        	</Grid>
+          <Grid item xs={12}>
+            <Box textAlign='center'>
+                <Button variant="contained" disabled={this.state.selectorState != SelectorState.NoSelection} onClick={() => this.startSelector(SelectorState.PageSource)}>Summarize Page</Button>
             </Box>
         	</Grid>
         	<Grid item xs={12}>
