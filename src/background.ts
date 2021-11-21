@@ -1,5 +1,7 @@
 /*global chrome*/
 
+import { handleMessage } from "./other/Background/message-handling";
+
 console.log('Hello Background');
 export { }
 
@@ -12,3 +14,6 @@ chrome.runtime.onInstalled.addListener(async (details: any) => {
         active: true
     });
 });
+
+// listen for messages
+chrome.runtime.onMessage.addListener(handleMessage);

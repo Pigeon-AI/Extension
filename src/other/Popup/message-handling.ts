@@ -78,6 +78,14 @@ const handlePageSource = async (data: any, app: App) => {
     app.setState({
         responseString: bodyText
     });
+
+    // send success message to background to speak out loud
+    chrome.runtime.sendMessage({
+        title: "speak",
+        data: bodyText,
+    }, (response) => {
+        console.log("Response: " + response);
+    });
 }
 
 const handleScreenshot = async (data: any, app: App) => {
@@ -115,5 +123,13 @@ const handleScreenshot = async (data: any, app: App) => {
 
     app.setState({
         responseString: bodyText
+    });
+
+    // send success message to background to speak out loud
+    chrome.runtime.sendMessage({
+        title: "speak",
+        data: bodyText,
+    }, (response) => {
+        console.log("Response: " + response);
     });
 }
