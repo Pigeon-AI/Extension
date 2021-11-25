@@ -11,6 +11,7 @@ import {
 } from '@material-ui/core';
 import SpeechRecognition from 'react-speech-recognition'
 import { Dictaphone } from '../Other/Dictaphone'
+import { azureIntentEndpoint } from '../../other/Common/constants';
 
 export enum SelectorState {
   NoSelection,
@@ -102,14 +103,80 @@ export class App extends React.Component<any, MyState> {
     })
   }
 
-  async doneListening() {
-    console.log("done listening")
+  async doneListening(spoken: string) {
+    const encoded = encodeURIComponent(spoken);
 
+    const uri = azureIntentEndpoint + encoded;
+
+    const response = await fetch(uri);
+
+    const json = await response.json();
+
+    let responseString: string | null = null;
+
+    // bad response
+    if (Math.floor(response.status / 100) != 2)
+    {
+      responseString = "Error, bad response from intent endpoint.";
+    }
+
+    // the inference endpoint says the user said something we don't understand
+    else if (json.prediction.topIntent == "None")
+    {
+      responseString = "Sorry, I don't know how to do that.";
+    }
+
+    // check for the two bad responses and respond appropriately
+    if (responseString !== null)
+    {
+      this.setState({
+        selectorState: SelectorState.NoSelection,
+        responseString: responseString
+      });
+
+      // send success message to background to speak out loud
+      chrome.runtime.sendMessage({
+          title: "speak",
+          data: responseString,
+      });
+
+      return;
+    }
+
+    let newState: SelectorState;
+
+    // the user wants a summary
+    if (json.prediction.topIntent == "Summarize")
+    {
+      responseString = "Getting a summary of the page...";
+
+      newState = SelectorState.PageSource;
+    }
+
+    // the user wants to begin an intent selector
+    else
+    {
+      responseString = "Starting inference element selector...";
+
+      newState = SelectorState.Infer;
+    }
+
+    // respond appropriately for the two good responses
     this.setState({
-      selectorState: SelectorState.NoSelection
-    })
+      selectorState: SelectorState.PageSource,
+      responseString: responseString
+    });
 
-    return;
+    // send success message to background to speak out loud
+    chrome.runtime.sendMessage({
+        title: "speak",
+        data: responseString,
+    });
+
+    // now actually get the summary/intent started
+    await this.startSelector(newState)
+
+    // background thread will handle the reception of this
   }
 
   render() {
@@ -122,7 +189,6 @@ export class App extends React.Component<any, MyState> {
           </Grid>
           <Grid item xs={12}>
             <Box textAlign='center'>
-              <Dictaphone wasListening={state.selectorState == SelectorState.Listening} onListenEnd={() => this.doneListening()} />
               <Button variant="contained" disabled={this.state.selectorState != SelectorState.NoSelection} onClick={() => this.listenOnce()}>Use microphone</Button>
             </Box>
         	</Grid>
@@ -139,6 +205,11 @@ export class App extends React.Component<any, MyState> {
           <Grid item xs={12}>
             <Box textAlign='center'>
                 <Button variant="contained" disabled={this.state.selectorState != SelectorState.NoSelection} onClick={() => this.startSelector(SelectorState.PageSource)}>Summarize Page</Button>
+            </Box>
+        	</Grid>
+          <Grid item xs={12}>
+            <Box textAlign='center'>
+              <Dictaphone wasListening={state.selectorState == SelectorState.Listening} onListenEnd={(s: string) => this.doneListening(s)} />
             </Box>
         	</Grid>
         	<Grid item xs={12}>

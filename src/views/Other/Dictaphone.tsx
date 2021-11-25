@@ -4,7 +4,7 @@ import { useSpeechRecognition } from 'react-speech-recognition'
 const transcribing = true;
 const clearTranscriptOnListen = true;
 
-export const Dictaphone = (props: {wasListening: boolean, onListenEnd: () => void}) => {
+export const Dictaphone = (props: {wasListening: boolean, onListenEnd: (spoken: string) => void}) => {
   const {
     transcript,
     listening,
@@ -14,7 +14,7 @@ export const Dictaphone = (props: {wasListening: boolean, onListenEnd: () => voi
   if (props.wasListening && !listening)
   {
     // slight delay so it's not too fast
-    setTimeout(() => props.onListenEnd(), 50);
+    setTimeout(() => props.onListenEnd(transcript), 50);
   }
 
   return (

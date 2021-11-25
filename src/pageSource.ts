@@ -11,6 +11,4 @@ chrome.runtime.sendMessage({
         pageTitle: document.title,
         pageUrl: window.location.host,
     }
-}, (response) => {
-    console.log("Response: " + response);
 });

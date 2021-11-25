@@ -83,8 +83,6 @@ const handlePageSource = async (data: any, app: App) => {
     chrome.runtime.sendMessage({
         title: "speak",
         data: bodyText,
-    }, (response) => {
-        console.log("Response: " + response);
     });
 }
 
@@ -129,7 +127,5 @@ const handleScreenshot = async (data: any, app: App) => {
     chrome.runtime.sendMessage({
         title: "speak",
         data: bodyText,
-    }, (response) => {
-        console.log("Response: " + response);
     });
 }

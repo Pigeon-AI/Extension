@@ -67,8 +67,6 @@ const handleClicks = (e: MouseEvent) => {
     chrome.runtime.sendMessage({
         title: "screenshot",
         data: data
-    }, (response) => {
-        console.log("Response: " + response);
     });
 }
 
