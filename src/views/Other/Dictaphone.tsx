@@ -18,9 +18,6 @@ export const Dictaphone = (props: {wasListening: boolean, onListenEnd: (spoken: 
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column' }}>
-      <span>listening: {listening ? 'on' : 'off'}</span>
-      <span>{transcript}</span>
-    </div>
+    <span>{transcript}</span>
   )
 }

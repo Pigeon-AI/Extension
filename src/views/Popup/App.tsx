@@ -209,13 +209,14 @@ export class App extends React.Component<any, MyState> {
         	</Grid>
           <Grid item xs={12}>
             <Box textAlign='center'>
-              <Dictaphone wasListening={state.selectorState == SelectorState.Listening} onListenEnd={(s: string) => this.doneListening(s)} />
+              <div style={{ display: 'flex', flexDirection: 'column' }}>
+                <h3>Request:</h3>
+                <Dictaphone wasListening={state.selectorState == SelectorState.Listening} onListenEnd={(s: string) => this.doneListening(s)} />
+                <h3>Response:</h3>
+                <span>{state.responseString}</span>
+              </div>
             </Box>
         	</Grid>
-        	<Grid item xs={12}>
-          		{state.responseString}
-        	</Grid>
-          {/* <ImageSuch></ImageSuch> */}
     	</Grid>
     );
   }
