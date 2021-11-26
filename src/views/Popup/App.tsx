@@ -18,7 +18,8 @@ export enum SelectorState {
   Upload,
   Infer,
   PageSource,
-  Listening
+  Listening,
+  Title
 }
 
 export interface MyState {
@@ -86,6 +87,18 @@ export class App extends React.Component<any, MyState> {
         files: ['/static/js/pageSource.js'],
       });
     }
+    else if (newState == SelectorState.Title) {
+      const queryOptions = { active: true, currentWindow: true };
+      const [tab] = await chrome.tabs.query(queryOptions);
+
+      console.log("Starting title shenanigans")
+
+      // execute the script that will call back
+      await chrome.scripting.executeScript({
+        target: { tabId: tab.id! },
+        files: ['/static/js/pageTitle.js'],
+      });
+    }
 
     this.setState({
       selectorState: newState
@@ -93,7 +106,7 @@ export class App extends React.Component<any, MyState> {
   }
 
   async listenOnce() {
-    const speechRecognition = await SpeechRecognition.startListening({ 
+    await SpeechRecognition.startListening({ 
       continuous: false,
       language: 'en-US'
     });
@@ -145,33 +158,42 @@ export class App extends React.Component<any, MyState> {
 
     let newState: SelectorState;
 
-    // the user wants a summary
-    if (json.prediction.topIntent == "Summarize")
-    {
-      responseString = "Getting a summary of the page...";
+    switch (json.prediction.topIntent) {
+      case "Summarize":
+        responseString = "Getting a summary of the page...";
+        newState = SelectorState.PageSource;
+        break;
 
-      newState = SelectorState.PageSource;
+      case "Title":
+        responseString = null;
+        newState = SelectorState.Title;
+        break;
+
+      case "Infer":
+        responseString = "Starting inference element selector...";
+        newState = SelectorState.Infer;
+        break;
+    
+      default:
+        newState = SelectorState.NoSelection;
+        console.error("Error got a bad classification")
+        break;
     }
 
-    // the user wants to begin an intent selector
-    else
+
+    if (responseString)
     {
-      responseString = "Starting inference element selector...";
+      // respond appropriately for the two good responses
+      this.setState({
+        responseString: responseString
+      });
 
-      newState = SelectorState.Infer;
+      // send success message to background to speak out loud
+      chrome.runtime.sendMessage({
+          title: "speak",
+          data: responseString,
+      });
     }
-
-    // respond appropriately for the two good responses
-    this.setState({
-      selectorState: SelectorState.PageSource,
-      responseString: responseString
-    });
-
-    // send success message to background to speak out loud
-    chrome.runtime.sendMessage({
-        title: "speak",
-        data: responseString,
-    });
 
     // now actually get the summary/intent started
     await this.startSelector(newState)
@@ -194,27 +216,17 @@ export class App extends React.Component<any, MyState> {
         	</Grid>
           <Grid item xs={12}>
             <Box textAlign='center'>
-                <Button variant="contained" disabled={this.state.selectorState != SelectorState.NoSelection} onClick={() => this.startSelector(SelectorState.Upload)}>Upload Element</Button>
-            </Box>
-        	</Grid>
-          <Grid item xs={12}>
-            <Box textAlign='center'>
-                <Button variant="contained" disabled={this.state.selectorState != SelectorState.NoSelection} onClick={() => this.startSelector(SelectorState.Infer)}>Infer Element</Button>
-            </Box>
-        	</Grid>
-          <Grid item xs={12}>
-            <Box textAlign='center'>
-                <Button variant="contained" disabled={this.state.selectorState != SelectorState.NoSelection} onClick={() => this.startSelector(SelectorState.PageSource)}>Summarize Page</Button>
-            </Box>
-        	</Grid>
-          <Grid item xs={12}>
-            <Box textAlign='center'>
               <div style={{ display: 'flex', flexDirection: 'column' }}>
                 <h3>Request:</h3>
                 <Dictaphone wasListening={state.selectorState == SelectorState.Listening} onListenEnd={(s: string) => this.doneListening(s)} />
                 <h3>Response:</h3>
                 <span>{state.responseString}</span>
               </div>
+            </Box>
+        	</Grid>
+          <Grid item xs={12}>
+            <Box textAlign='center'>
+                <Button variant="contained" disabled={this.state.selectorState != SelectorState.NoSelection} onClick={() => this.startSelector(SelectorState.Upload)}>Upload Element</Button>
             </Box>
         	</Grid>
     	</Grid>

@@ -34,11 +34,33 @@ export const handleMessage = (app: App) => {
                     });
                     break;
 
+                case "pageTitle":
+                    console.log("popup.js received message \'pageTitle\'")
+                    await handlePageTitle(message.data, app)
+                    sendResponse("Success!");
+                    app.setState({
+                        selectorState: SelectorState.NoSelection,
+                    });
+                    break;
+
                 default:
                     console.log("popup.js received message \'" + message.title + "\', doing nothing")
                     break;
         }
     }
+}
+
+const handlePageTitle = async (data: {pageTitle: string}, app: App) => {
+
+    app.setState({
+        responseString: data.pageTitle
+    });
+
+    // send success message to background to speak out loud
+    chrome.runtime.sendMessage({
+        title: "speak",
+        data: data.pageTitle,
+    });
 }
 
 const handlePageSource = async (data: any, app: App) => {
