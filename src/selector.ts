@@ -50,6 +50,7 @@ const handleClicks = (e: MouseEvent) => {
         elementHeight: rect.bottom - rect.top,
         outerHTML: target.outerHTML,
         pageSource: pageSource,
+        pageTitle: document.title
     };
 
     console.log(data);
